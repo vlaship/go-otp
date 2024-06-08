@@ -1,0 +1,52 @@
+name: Go
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    name: Build, Test, and Publish
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+    - uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.22'
+
+    - name: Build
+      run: go build -v ./...
+
+    - name: Test
+      run: go test -v ./...
+
+    - name: Generate coverage report
+      run: go test -coverprofile=coverage.out ./...
+
+    - name: Update README with coverage
+      run: |
+        go install github.com/go-playground/overalls@latest
+        overalls -project=$(pwd) -covermode=count -debug
+        go tool cover -func=overalls.coverprofile | grep total | awk '{print $3}' > coverage.txt
+        coverage=$(cat coverage.txt)
+        sed -i '' 's/^Coverage:.*/Coverage: '"$coverage"'/' README.md
+
+    - name: Commit and push updated README
+      uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: Update coverage in README
+        branch: main
+        file_pattern: README.md
+
+    - name: Publish package
+      if: github.ref == 'refs/heads/main'
+      run: |
+        go mod tidy
+        git tag -a v${GITHUB_RUN_NUMBER} -m "Release v${GITHUB_RUN_NUMBER}"
+        git push origin --tags
