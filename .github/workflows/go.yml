@@ -1,4 +1,4 @@
-name: Go
+name: build
 
 on:
   push:
@@ -33,10 +33,3 @@ jobs:
         run: $(go env GOPATH)/bin/goveralls -service="github" -coverprofile=$GITHUB_WORKSPACE/profile.cov
         env:
           COVERALLS_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-
-#      - name: Publish package
-#        if: github.ref == 'refs/heads/main'
-#        run: |
-#          go mod tidy
-#          git tag -a v${GITHUB_RUN_NUMBER} -m "Release v${GITHUB_RUN_NUMBER}"
-#          git push origin --tags
