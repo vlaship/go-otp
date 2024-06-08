@@ -9,18 +9,23 @@
 
 To start using go-otp, install Go and run `go get`:
 
-    go get github.com/vlaship/go-otp
-
+```bash
+go get github.com/vlaship/go-otp
+```
 This will retrieve the library.
 
 ## Usage
 
 Import the package into your project.
 
-    import "github.com/vlaship/go-otp"
+```go
+import "github.com/vlaship/go-otp"
+```
 
 Use it like this:
 
-    otp := otp.Generate()
+```go
+o := otp.Generate()
+```
 
 This will generate a new OTP.
