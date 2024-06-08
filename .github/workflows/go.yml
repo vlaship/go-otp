@@ -35,7 +35,11 @@ jobs:
           overalls -project=$(pwd) -covermode=count -debug
           go tool cover -func=overalls.coverprofile | grep total | awk '{print $3}' > coverage.txt
           coverage=$(cat coverage.txt)
-          sed -i '' 's/^Coverage:.*/Coverage: '"$coverage"'/' README.md
+          if grep -q "^Coverage:" README.md; then
+            sed -i 's/^Coverage:.*/Coverage: '"$coverage"'/' README.md
+          else
+            echo -e "\nCoverage: $coverage" >> README.md
+          fi
 
       - name: Commit and push updated README
         uses: stefanzweifel/git-auto-commit-action@v4
